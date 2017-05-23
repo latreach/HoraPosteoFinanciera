@@ -16,7 +16,7 @@ library(lubridate)
 setwd("~/local/Sonia/HoraPosteoFinanciera/datos/")
 
 ##Cargando datos
-post <- read.csv("datosAnalisis.csv",header=T)
+post <- read.csv("datosAnalisis.csv", header=T)
 
 ##Funciones
 horaCorrecta <- function(hora){
