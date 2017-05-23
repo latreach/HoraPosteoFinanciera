@@ -1,15 +1,16 @@
-library(magrittr)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(lubridate)
-
 ####################################   
 #Creado por Área de Data Science    <(°) 
 # Fernando Dorantes Nieto             ( >)"
 # Christian Daniel Morán Titla         /|
 # Heloel Hernández Santos
 ####################################
+
+# Librerías ---------------------------------------------------------------
+library(magrittr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lubridate)
 
 ##Sembrando directorio
 setwd("~/local/Sonia/HoraPosteoFinanciera/datos/")
