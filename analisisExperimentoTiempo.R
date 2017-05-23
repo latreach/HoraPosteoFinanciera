@@ -29,13 +29,6 @@ horaCorrecta <- function(hora){
   }
 }
 
-##Sugiero esta función para todas las zonas horarias
-horaZona <- function(hora, diferencia){
-  X =  hora - diferencia
-  Y =  ifelse(X<0, 24+X, X)
-  return(Y)
-}
-
 # Análisis ----------------------------------------------------------------
 
 post <- post %>%
