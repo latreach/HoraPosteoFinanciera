@@ -1,20 +1,50 @@
-setwd("/home/fer-datascientist/Documentos/Chris/Posteos/AnalisisFinanciera/datos")
-post <- read.csv("datosAnalisis.csv",header=T)
-head(post)
+library(magrittr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 library(lubridate)
 
+####################################   
+#Creado por Área de Data Science    <(°) 
+# Fernando Dorantes Nieto             ( >)"
+# Christian Daniel Morán Titla         /|
+# Heloel Hernández Santos
+####################################
+
+##Sembrando directorio
+setwd("~/local/Sonia/HoraPosteoFinanciera/datos/")
+
+##Cargando datos
+post <- read.csv("datosAnalisis.csv",header=T)
+
+##Funciones
 horaCorrecta <- function(hora){
-  temp <- hora -6
-  if(temp<0){
-    regresa<-24+temp
-    return(regresa)
+  X <- hora - 6
+  if(X<0){
+    Y <- 24 + X
+    return(Y)
   }else{
-    return(temp)
+    return(X)
   }
 }
 
-post <- post %>% 
-  .[c(1,2,4,6,7,10:16)] %>%
+##Sugiero esta función para todas las zonas horarias
+horaZona <- function(hora, diferencia){
+  X <- hora - diferencia
+  if(X<0){
+    Y <- 24 + X
+    return(Y)
+  }else{
+    return(X)
+  }
+}
+
+# Análisis ----------------------------------------------------------------
+
+post <- post %>%
+  select(id, likes_count, from_name, created_time, type, 
+         comments_count, shares_count, love_count, haha_count, 
+         wow_count, sad_count, angry_count) %>% 
   separate(created_time,c("Fecha","Hora"),sep="T") %>% 
   mutate(Fecha= as.Date(Fecha)) %>% 
   mutate(anio = year(Fecha)) %>% 
@@ -23,15 +53,13 @@ post <- post %>%
   mutate(Fecha = weekdays(Fecha)) %>% 
   mutate(Hora = gsub(":\\S+","",Hora))  %>% 
   mutate(Hora= as.numeric(Hora)) %>% 
-  mutate(Hora = sapply(Hora, horaCorrecta)) %>% 
+  mutate(Hora = sapply(Hora, function(x){horaZona(x,6)})) %>% 
   mutate(Hora = as.character(Hora))
 
 
 
-head(post)
-
-post$from_name %>%  unique
-post %>% .[c(3,4,5,2,7:13)] %>% 
+post %>% 
+  select(-id, -type) %>% 
   # filter(from_name=="SEAT México") %>%
   select(-from_name) %>% 
   group_by(Fecha,Hora) %>% 
@@ -50,7 +78,8 @@ post %>% .[c(3,4,5,2,7:13)] %>%
 
 
 
-sumaPosteo <- post %>% .[c(3,4,5,2,7:13)] %>% 
+sumaPosteo <- post %>%
+  select(-id, -type) %>% 
   # filter(from_name=="SEAT México") %>%
   select(-from_name) %>% 
   group_by(Fecha,Hora) %>% 
@@ -60,9 +89,9 @@ sumaPosteo <- post %>% .[c(3,4,5,2,7:13)] %>%
   select(Fecha, Hora, totales) 
 
 
-conteoPosteo <- post %>% .[c(3,4,5,2,7:13)] %>% 
+conteoPosteo <- post %>%  
+  select(-id, -type) %>% 
   # filter(from_name=="SEAT México") %>%
   select(-from_name) %>% 
   group_by(Fecha,Hora) %>%  tally 
 
-plot(conteoPosteo$n, sumaPosteo$totales, type="p")
