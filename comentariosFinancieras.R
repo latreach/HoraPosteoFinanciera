@@ -31,7 +31,7 @@ ids <- data$id %>%  unique %>%
 
 # Comentarios -------------------------------------------------------------
 numero <- 0
-comments <- lapply(c(ids, "dasdasda"), function(x){
+comments <- lapply(ids, function(x){
   numero <<- numero + 1 
   Y = tryCatch(
     getPost(x, comments = T, n.comments = 2000, token = fb_oauth),
