@@ -6,7 +6,7 @@
 #                                              
 library(magrittr)
 c("data.table", "dplyr", "Rfacebook") %>% 
-  sapply(require,character.only=T)
+  sapply(require, character.only=T)
 
 
 # Realizando la conexión APIS REDES SOCIALES
