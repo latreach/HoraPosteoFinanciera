@@ -5,7 +5,7 @@
 #                                       /|       w w
 #                                              
 library(magrittr)
-c("data.table", "dplyr", "tidyr", "lubridate", "Rfacebook", "ggplot2") %>% 
+c("data.table", "dplyr", "tidyr", "lubridate", "Rfacebook") %>% 
   sapply(require,character.only=T)
 
 
