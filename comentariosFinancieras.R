@@ -52,7 +52,7 @@ comments %>%
   write.csv("comentariosFinancieras.csv", row.names = F)
 
 
-
+rm(list = ls())
 
 
 
