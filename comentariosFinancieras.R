@@ -49,7 +49,7 @@ comments <- lapply(ids, function(x){
 
 comments <- rbindlist(comments)
 comments %>% 
-  write.csv("comentariosFinancieras.csv", row.names=F)
+  write.csv("comentariosFinancieras.csv", row.names = F)
 
 
 
