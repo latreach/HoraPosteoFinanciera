@@ -51,6 +51,8 @@ comments <- rbindlist(comments)
 comments %>% 
   write.csv("comentariosFinancieras.csv", row.names = F)
 
+### ADVERTENCIA 
+## Correr la siguiente linea solo si ya no se utilizarán los datos
 
 rm(list = ls())
 
