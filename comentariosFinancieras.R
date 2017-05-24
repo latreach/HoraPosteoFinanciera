@@ -1,11 +1,11 @@
 ####################################
-#                                                ^ ^
-# Creado por Área de Data Science    <(°)      =(°-°)=         
-# Fernando Dorantes Nieto              ( >)"    (   )S  
-#                                       /|       w w
+#                                                   ^ ^
+# Creado por el Área de Data Science    <(°)      =(°-°)=         
+# Fernando Dorantes Nieto                 ( >)"    (   )S  
+#                                          /|       w w
 #                                              
 library(magrittr)
-c("data.table", "dplyr", "tidyr", "lubridate", "Rfacebook") %>% 
+c("data.table", "dplyr", "Rfacebook") %>% 
   sapply(require,character.only=T)
 
 
@@ -22,12 +22,10 @@ idFB_seat = 113144262054871
 # Directorio --------------------------------------------------------------
 setwd("~/local/Sonia/HoraPosteoFinanciera/datos")
 
-
 # Datos -------------------------------------------------------------------
 data <- read.csv("datosAnalisis.csv", header = T)
 ids <- data$id %>%  unique %>% 
   as.character
-
 
 # Comentarios -------------------------------------------------------------
 numero <- 0
