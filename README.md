@@ -1,4 +1,13 @@
 # HoraPosteoFinanciera
+
+## Lenguajes de programación utilizados
+### Estadística
+#### R
+### Recolección de datos 
+#### R y Python
+### Reporte escrito en
+#### Latex
+
 ## Objetivos
 * Determinar la mejor hora y día para postear.
 * Conocer cual es la  mejor hora para postear en Facebook.
