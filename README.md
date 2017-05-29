@@ -17,7 +17,7 @@
 #### Latex
 
 ## Licencia
-GNU-GPL v3 más información aquí: [licencia](https://github.com/latreach/HoraPosteoFinanciera/blob/master/LICENSE)
+GNU-GPL v3 más información aquí: [licencia](https://github.com/latreach/HoraPosteoFinanciera/blob/master/LICENSE).
 
 
 
