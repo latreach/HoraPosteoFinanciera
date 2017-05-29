@@ -2,17 +2,13 @@
 #Creado por Área de Data Science    <(°) 
 # Fernando Dorantes Nieto             ( >)"
 # Christian Daniel Morán Titla         /|
-# Heloel Hernández Santos
 ####################################
 
 # Librerías ---------------------------------------------------------------
 library(magrittr)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(lubridate)
-library(lme4)
-library(car)
+c("dplyr", "tidyr", "ggplot2", "lubridate", "bipartite",
+  "lubridate", "lme4", "car", "lattice") %>% 
+  sapply(require, character.only=T)
 
 ##Sembrando directorio
 setwd("~/local/Sonia/HoraPosteoFinanciera/datos/")
@@ -210,7 +206,6 @@ SumConPosteo %>%
   scale_y_continuous(labels = scales::comma)
 
 ### ********* Mejor hora y día de posteo ******** ### ## Pendiente
-# library(bipartite)
 post2 <- post %>%
   select(-id,-from_name) %>% 
   group_by(Dia,Hora,type) %>% 
