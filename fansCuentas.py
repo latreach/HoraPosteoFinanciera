@@ -1,3 +1,16 @@
+'''
+                                                   ^ ^
+ Creado por el Área de Data Science    <(°)      =(°-°)=         
+ Fernando Dorantes Nieto                 ( >)"    (   )S  
+                                          /|       w w
+
+Este archivo tiene como objetivo descargar --
+--el número de fans que tuvieron las cuentas --
+--de Facebook de SEAT y Volkswagen Financial Services
+
+'''
+
+
 import facebook
 import pandas as pd
 import numpy as np
