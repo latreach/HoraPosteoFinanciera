@@ -23,6 +23,10 @@ idFinancieraVW <- 282547551846127
 ids <- c(113144262054871, 282547551846127)
 
 
+##Parámetros fijos de las gráficas
+theme_set(theme_bw())
+
+
 # Recolección de datos ----------------------------------------------------
 
 # datosFB <- lapply(ids, function(x){
@@ -87,7 +91,6 @@ dataFb <- dataFb %>%
   
 
 # Test de Normalidad ------------------------------------------------------
-
 dataFb %>% 
   group_by(Cuenta) %>% 
   do(test = shapiro.test(.$enganche)) %>% 
@@ -123,16 +126,42 @@ modelos2 <- SumaPosteos %>%
 modelos2 %>% 
   lapply(function(x){anova(x, test="Chisq")})
 
-# SumaPosteos %>%
-#   split(.$Cuenta) %>% 
-#   map(~ glm(enganche~NumPosteos+type, data=., 
-#             family=quasipoisson(link="log"))) %>% 
-#   lapply(function(x){anova(x, test="Chisq")}) %>% 
-#   .$VWFS %>%
-#   .[,c(2,4)] %>% 
-#   .[-1,] %>%
-#   data.frame %>% 
-#   mutate(percentage = (Resid..Dev/152.029)) %>% 
-#   select(percentage) %>%  unlist %>% sum(na.rm=T)
+
+# Gráficos ----------------------------------------------------------------
+dataFb$diaSeman <- factor(dataFb$diaSeman,levels =c("lunes", "martes",
+                                                    "miércoles", "jueves", 
+                                                    "viernes", "sábado",
+                                                    "domingo"))
+
+
+dataFb<- dataFb %>%  
+  left_join(dataFb %>% 
+              group_by(Hora, diaSeman, Cuenta) %>% 
+              tally) %>%  head
+
+x11()
+dataFb %>%  
+  filter(Cuenta=="SEAT") %>% 
+  data.table %>% 
+  .[, enganche := enganche*100] %>% 
+  ggplot(aes(x= Hora, y= enganche)) +
+  geom_boxplot(fill="steelblue")+
+  theme(strip.background = element_rect(fill="white"))+
+  facet_wrap(~diaSeman)+
+  ylab("Enganche") + xlab("Hora")
+
+x11()
+dataFb %>%  
+  filter(Cuenta=="VWFS") %>% 
+  data.table %>% 
+  .[, enganche := enganche*100] %>% 
+  ggplot(aes(x= Hora, y= enganche)) +
+  geom_boxplot(fill="darkred") +
+  theme(strip.background = element_rect(fill="white"))+
+  facet_wrap(~diaSeman)+
+  ylab("Enganche") + xlab("Hora")+
+  geom_label(aes(x= 12, y=12, label=n))
+  
+
 
 
