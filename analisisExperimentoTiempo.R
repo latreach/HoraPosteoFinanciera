@@ -155,7 +155,8 @@ SumConPosteoCuenta %>%
 
 ### **************** Comparar tipo de contenido ****************** ###
 glm(valor~type+Hora*Dia,poisson, SumConPosteoCuenta) %>% summary
-modelo <- glm(valor~type+Hora*Dia,poisson, SumConPosteoCuenta) %>% anova(test="Chisq")
+modelo <- glm(valor~type+Hora*Dia,poisson, SumConPosteoCuenta) %>%
+  anova(test="Chisq")
 
 modelo %>%
   rename(RDev = `Resid. Dev`) %>% 
@@ -214,28 +215,130 @@ post2 <- post %>%
   mutate(reaccionesTotales = rowSums(.[,c(4,7:11)])) %>% 
   .[c(-4,-7:-11)]
 
+post2 <- post2 %>% 
+  mutate(Dia =factor(post2$Dia, 
+                     levels(droplevels.factor(post2$Dia))[c(1,3,4,5,2,7,6)]))  
+# post2 %>% select(-Dia,-type) %>%
+  # mutate(Hora = as.character(Hora)) %>%
+  # group_by(Dia) %>%
+  # group_by(Hora) %>%
+  # group_by(type) %>% 
+  # summarise_each(funs(sum(.,na.rm=T))) %>% 
+  # select(-Hora) %>% t %>% data.frame %>%
+  # prcomp %>% biplot %>% abline(v=0,h=0,lty=2)
+
+
+post2 %>% select(-type) %>%
+  group_by(Dia,Hora) %>%
+  summarise_each(funs(sum(.,na.rm=T))) %>% .[c(-1,-2)] %>%
+  # data.frame %>% 
+  nested(method="NODF2")
+
+
+# post2 %>% select(-Hora,-type) %>%
+#   group_by(Dia) %>%
+#   summarise_each(funs(sum(.,na.rm=T))) %>%
+#   gather(interacciones,valor,-Dia) %>% 
+#   ggplot(aes(Dia,interacciones))+ 
+#   geom_tile(aes(fill = valor),colour = "white") + 
+#   scale_fill_gradient(low = "white",high = "steelblue")
+
+
+# Mapa de calor total
+post2 %>% select(-type) %>%
+  group_by(Dia,Hora) %>%
+  summarise_each(funs(sum(.,na.rm=T))) %>%
+  gather(interacciones,Reacciones,-Dia,-Hora) %>% 
+  ggplot(aes(Dia,Hora))+
+  geom_tile(aes(fill = Reacciones),colour = "gray") + 
+  scale_fill_gradient(low = "white",high = "red") +
+  theme_classic() +
+  ggtitle("Total")
+  
+
+
+# Mapa de calor por Reacciones Totales
+post2 %>% select(-type) %>%
+  group_by(Dia,Hora) %>%
+  summarise_each(funs(sum(.,na.rm=T))) %>%
+  gather(interacciones,Reacciones,-Dia,-Hora) %>% 
+  filter(interacciones == "reaccionesTotales") %>% 
+  ggplot(aes(Dia,Hora))+ 
+  geom_tile(aes(fill = Reacciones),colour = "gray") + 
+  scale_fill_gradient(low = "white", high = "red", 
+                      name="Reacciones \n totales") +
+  theme_classic()
+
+# Mapa de calor por Comentarios
+
+post2 %>% select(-type) %>%
+  group_by(Dia,Hora) %>%
+  summarise_each(funs(sum(.,na.rm=T))) %>%
+  gather(interacciones ,Reacciones, -Dia, -Hora) %>% 
+  filter(interacciones == "comments_count") %>% 
+  ggplot(aes(Dia, Hora))+ 
+  geom_tile(aes(fill = Reacciones), colour = "gray") + 
+  scale_fill_gradient(low = "white", high = "red", 
+                      name="Número de \n comentarios") +
+  theme_classic()
+
+# Mapa de calor por Shares
+post2 %>% select(-type) %>%
+  group_by(Dia,Hora) %>%
+  summarise_each(funs(sum(.,na.rm=T))) %>%
+  gather(interacciones,Reacciones,-Dia,-Hora) %>% 
+  filter(interacciones == "shares_count") %>% 
+  ggplot(aes(Dia,Hora))+ 
+  geom_tile(aes(fill = Reacciones),colour = "gray") + 
+  scale_fill_gradient(low = "white", high = "red", 
+                      name="Número de \n veces compartido", 
+                      formatter=labels::comma) +
+  theme_classic()
+  
   
 post2 %>% select(-Dia,-type) %>%
-  # mutate(Hora = as.character(Hora)) %>%
+# post %>% select(-id,-from_name) %>% 
+  # group_by(Dia,Hora,type) %>%
+  # mutate(Hora = as.numeric(Hora)) %>%
   # group_by(Dia) %>%
   group_by(Hora) %>%
   # group_by(type) %>% 
-  summarise_each(funs(sum(.,na.rm=T))) %>% 
-  select(-Hora) %>% t %>% data.frame %>%
-  prcomp %>% biplot %>% abline(v=0,h=0,lty=2)
+  summarise_each(funs(sum(.,na.rm=T))) %>% .[-1] %>%
+  plotweb(method="normal",
+          text.rot=90,
+          low.lablength=7,
+          high.lablength=5,
+          col.high =  "white",
+          col.low="lavender",
+          col.interaction="black",
+          bor.col.interaction="green4",
+          y.width.low=.07,
+          y.width.high=.07)
 
+
+  post2 %>% select(-Hora,-type) %>%
+  # mutate(Hora = as.numeric(Hora)) %>%
+  group_by(Dia) %>%
+  summarise_each(funs(sum(.,na.rm=T))) %>% .[-1] %>%
+  plotweb(method="normal",
+          text.rot=90,
+          low.lablength=7,
+          high.lablength=5,
+          col.high =  "white",
+          col.low="lavender",
+          col.interaction="black",
+          bor.col.interaction="green4",
+          y.width.low=.07,
+          y.width.high=.07)
+  
 
 post2 %>% select(-Dia,-type) %>%
   mutate(Hora = as.numeric(Hora)) %>%
-  # group_by(Dia) %>%
   group_by(Hora) %>%
-  # group_by(type) %>% 
-  summarise_each(funs(sum(.,na.rm=T))) %>% .[-1] %>% plotweb
+  summarise_each(funs(sum(.,na.rm=T))) %>% .[-1] %>%
+  graph.incidence %>%
+  plot(vertex.label=NA, vertex.size=7, layout=layout.bipartite)
   
-
-# post2 %>% select(-type) %>%
-#   mutate(DH = paste(Dia,Hora,sep="")) %>% 
-#   group_by(DH) %>% .[c(-1,-2)]
 
 
 ### **************** Comparar tipo de contenido ****************** ###
@@ -248,7 +351,8 @@ SumConPosteoSC <- post %>%
   gather(reaccion, valor, -Dia, -Hora,-type)
 
 glm(valor~type+Hora*Dia,poisson, SumConPosteoSC) %>% summary
-modelo2 <- glm(valor~type+Hora*Dia,poisson, SumConPosteoSC) %>% anova(test="Chisq")
+modelo2 <- glm(valor~type+Hora*Dia,poisson, SumConPosteoSC) %>%
+  anova(test="Chisq")
 
 modelo2 %>%
   rename(RDev = `Resid. Dev`) %>% 
