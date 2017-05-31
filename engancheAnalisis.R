@@ -27,6 +27,18 @@ ids <- c(113144262054871, 282547551846127)
 theme_set(theme_bw())
 
 
+##Funciones 
+capitaliza=  function(x){ 
+  x = tolower(x); x = strsplit(x, " ");
+  x = sapply(x, function(c){
+    paste(
+      toupper(substring(c, 1,1)),
+      substring(c,2), sep="", collapse=" "
+    )})
+  return(x)
+}
+
+
 # Recolección de datos ----------------------------------------------------
 
 # datosFB <- lapply(ids, function(x){
@@ -86,6 +98,7 @@ dataFb <- dataFb %>%
   .[, Hora  := gsub("[:]\\S+", "", Hora)] %>% 
   .[, Cuenta := ifelse(from_id==113144262054871, "SEAT", "VWFS")] %>%
   .[, diaSeman := weekdays(Fecha)] %>% 
+  .[, diaSeman := capitaliza(diaSeman)] %>% 
   select(-fecha)
 
   
@@ -119,7 +132,7 @@ modelos1 <- SumaPosteos %>%
 
 modelos2 <- SumaPosteos %>% 
   split(.$Cuenta) %>% 
-  map(~ glm(enganche~NumPosteos+type+diaSeman, data=.,
+  map(~ glm(enganche~NumPosteos+Hora+diaSeman, data=.,
             family = quasibinomial(link="logit"))) 
 
 
@@ -128,16 +141,16 @@ modelos2 %>%
 
 
 # Gráficos ----------------------------------------------------------------
-dataFb$diaSeman <- factor(dataFb$diaSeman,levels =c("lunes", "martes",
-                                                    "miércoles", "jueves", 
-                                                    "viernes", "sábado",
-                                                    "domingo"))
+dias <- c("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", 
+          "Sábado", "Domingo")
+
+dataFb$diaSeman <- factor(dataFb$diaSeman,levels = dias)
 
 
 dataFb<- dataFb %>%  
   left_join(dataFb %>% 
-              group_by(Hora, diaSeman, Cuenta) %>% 
-              tally) %>%  head
+              group_by(diaSeman, Cuenta) %>% 
+              tally)
 
 x11()
 dataFb %>%  
@@ -145,10 +158,13 @@ dataFb %>%
   data.table %>% 
   .[, enganche := enganche*100] %>% 
   ggplot(aes(x= Hora, y= enganche)) +
-  geom_boxplot(fill="steelblue")+
+  geom_boxplot(fill="steelblue")+ theme_bw()+
   theme(strip.background = element_rect(fill="white"))+
   facet_wrap(~diaSeman)+
-  ylab("Enganche") + xlab("Hora")
+  ylab("Enganche") + xlab("Hora")+
+  geom_label(aes(x= 12, y=0.4, label=paste("Número de posteos:", n, sep=" ")))+
+  ggtitle("Enganche de los posteos de SEAT \n por día y hora de publicación \n (2016-01-01/2017-05-15)")+
+  theme(plot.title = element_text(hjust=0.5))
 
 x11()
 dataFb %>%  
@@ -156,12 +172,29 @@ dataFb %>%
   data.table %>% 
   .[, enganche := enganche*100] %>% 
   ggplot(aes(x= Hora, y= enganche)) +
-  geom_boxplot(fill="darkred") +
+  geom_boxplot(fill="darkred") + theme_bw()+
   theme(strip.background = element_rect(fill="white"))+
   facet_wrap(~diaSeman)+
   ylab("Enganche") + xlab("Hora")+
-  geom_label(aes(x= 12, y=12, label=n))
-  
+  geom_label(aes(x= 12, y=12, label=paste("Número de posteos:", n, sep=" ")))+
+  ggtitle("Enganche de los posteos de VWFS \n por día y hora de publicación")+
+  theme(plot.title = element_text(hjust=0.5))
 
 
+test1 <- dataFb %>%  
+  filter(Cuenta=="SEAT") %>% 
+  select(Fecha, enganche)
+
+test2 <- dataFb %>%  
+  filter(Cuenta=="VWFS") %>% 
+  select(Fecha, enganche)
+
+test1 %>%  head
+
+x11()
+xts(test1[,-1], as.Date(test1[,1])) %>%  
+  # diff(diff=7) %>%
+  dygraph()
+x11()
+xts(test2[,-1], as.Date(test2[,1])) %>%  dygraph()
 
