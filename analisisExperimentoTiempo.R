@@ -43,9 +43,8 @@ capitaliza=  function(x){
 
 # Utilizar sólo columnas designadas a posteos y al id, cuenta, dia
 # y hora de posteos
-post %>%  head
 post <- post %>%
-  dplyr::select(id, likes_count, from_name, created_time, type, 
+  select(id, likes_count, from_name, created_time, type, 
          comments_count, shares_count, love_count, haha_count, 
          wow_count, sad_count, angry_count) %>% 
   separate(created_time,c("Dia","Hora"),sep="T") %>% 
@@ -234,7 +233,8 @@ post2 %>% select(-type) %>%
   ggplot(aes(Dia,Hora))+
   xlab("") +
   geom_tile(aes(fill = Reacciones), colour = "gray") + 
-  scale_fill_gradient(low = "white", 
+  scale_fill_gradient(name = "Interacciones \n Totales",
+                      low = "white", 
                       high = "steelblue", 
                       labels =scales::comma,
                       breaks = seq(0, 1.5e6, by=2e5)) +
@@ -254,7 +254,8 @@ post2 %>% select(-type) %>%
   ggplot(aes(Dia,Hora))+
   xlab("") +
   geom_tile(aes(fill = Reacciones),colour = "gray") + 
-  scale_fill_gradient(low = "white", 
+  scale_fill_gradient(name = "Reacciones",
+                      low = "white", 
                       high = "steelblue", 
                       labels =scales::comma,
                       breaks = seq(0, 1.5e6, by=2e5)) +
@@ -274,7 +275,8 @@ post2 %>% select(-type) %>%
   ggplot(aes(Dia, Hora)) +
   xlab("") +
   geom_tile(aes(fill = Reacciones), colour = "gray") + 
-  scale_fill_gradient(low = "white", 
+  scale_fill_gradient(name = "Comentarios",
+                      low = "white", 
                       high = "steelblue", 
                       labels =scales::comma) +
   scale_y_continuous(limits = c(0,23),
@@ -293,7 +295,8 @@ post2 %>% select(-type) %>%
   ggplot(aes(Dia,Hora)) +
   xlab("") +
   geom_tile(aes(fill = Reacciones),colour = "gray") + 
-  scale_fill_gradient(low = "white", 
+  scale_fill_gradient(name = "Número de veces \n compartido",
+                      low = "white", 
                       high = "steelblue", 
                       labels =scales::comma,
                       breaks = seq(0,3e5,5e4)) +
