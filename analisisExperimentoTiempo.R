@@ -436,7 +436,7 @@ rangos %>%
   ylab("Número de Comentarios") +
   geom_point(color="steelblue", size=4) +
   geom_line(color="darkred")+
-  theme_bw()+
+  theme_classic()+
   geom_text(vjust =1, hjust=-.2, angle = 45, 
             aes(x =rango, y = valor, label=DH)) +
   scale_y_continuous(limits = c(10000,39000),
@@ -456,7 +456,7 @@ rangos %>%
   ylab("Número de Posteos Compartidos") +
   geom_point(color="steelblue", size=4) +
   geom_line(color="darkred")+
-  theme_bw()+
+  theme_classic()+
   geom_text(vjust =1, hjust=-.2, angle = 45, 
             aes(x =rango, y = valor, label=DH)) +
   scale_y_continuous(limits = c(44000,210000),
@@ -477,7 +477,7 @@ rangos %>%
   ylab("Número de Reacciones Totales") +
   geom_point(color="steelblue", size=4) +
   geom_line(color="darkred") +
-  theme_bw()+
+  theme_classic()+
   geom_text(vjust =1, hjust=-.2, angle = 45, 
             aes(x =rango, y = valor, label=DH)) +
   scale_y_continuous(limits = c(4.8e5,12.2e5),
