@@ -53,6 +53,7 @@ post <- post %>%
   # filter(type=="offer") %>%
   select(-anio) %>% 
   mutate(Dia = weekdays(Dia)) %>% 
+  mutate(Dia = capitaliza(Dia)) %>% 
   mutate(Hora = gsub(":\\S+","",Hora))  %>% 
   mutate(Hora= as.numeric(Hora)) %>% 
   mutate(Hora = sapply(Hora, horaCorrecta)) %>% 
@@ -125,7 +126,7 @@ SumConPosteo %>%
   xlab("Número de posteos") +
   scale_y_continuous(labels = scales::comma)
   
-# Existe un efecto del número de posteos
+  # Existe un efecto del número de posteos
 
 # Hay una dependencia positiva de la suma de reacciones en función del 
 # número de posteos con un 41 % de explicación, el tipo de posteo
@@ -209,6 +210,7 @@ post2 <- post %>%
   mutate(reaccionesTotales = rowSums(.[,c(4,7:11)])) %>% 
   .[c(-4,-7:-11)]
 
+
 # Ordenar los días de domingo a sábado
 post2 <- post2 %>% 
   mutate(Dia =factor(post2$Dia, 
@@ -217,94 +219,121 @@ post2 <- post2 %>%
 
 # Anidamiento
 post2 %>% select(-type) %>%
-  group_by(Dia,Hora) %>%
-  summarise_each(funs(sum(.,na.rm=T))) %>% .[c(-1,-2)] %>%
+  group_by(Dia, Hora) %>%
+  summarise_each(funs(sum(., na.rm=T))) %>% .[c(-1,-2)] %>%
   # data.frame %>% 
   nested(method="NODF2")
 
 
 # Mapa de calor total
+png("../imagenes/fig1.png",height = 800, width = 1000, res = 120)
 post2 %>% select(-type) %>%
-  group_by(Dia,Hora) %>%
+  group_by(Dia, Hora) %>%
   summarise_each(funs(sum(.,na.rm=T))) %>%
-  gather(interacciones,Reacciones,-Dia,-Hora) %>% 
+  gather(interacciones, Reacciones, -Dia, -Hora) %>%
   ggplot(aes(Dia,Hora))+
-  geom_tile(aes(fill = Reacciones),colour = "gray") + 
-  scale_fill_gradient(low = "white",high = "red") +
-  theme_classic() +
-  ggtitle("Total")
+  xlab("") +
+  geom_tile(aes(fill = Reacciones), colour = "gray") + 
+  scale_fill_gradient(low = "white", 
+                      high = "steelblue", 
+                      labels =scales::comma,
+                      breaks = seq(0, 1.5e6, by=2e5)) +
+  scale_y_continuous(limits = c(0,23),
+                     breaks = seq(0,23, by = 1)) +
+  theme_classic()
+dev.off()
 
 
 # Mapa de calor por Reacciones Totales
+png("../imagenes/fig2.png",height = 800, width = 1000, res = 120)
 post2 %>% select(-type) %>%
   group_by(Dia,Hora) %>%
   summarise_each(funs(sum(.,na.rm=T))) %>%
   gather(interacciones,Reacciones,-Dia,-Hora) %>% 
   filter(interacciones == "reaccionesTotales") %>% 
-  ggplot(aes(Dia,Hora))+ 
+  ggplot(aes(Dia,Hora))+
+  xlab("") +
   geom_tile(aes(fill = Reacciones),colour = "gray") + 
-  scale_fill_gradient(low = "white", high = "red", 
-                      name="Reacciones \n totales") +
-                      # formatter=labels::comma) +
+  scale_fill_gradient(low = "white", 
+                      high = "steelblue", 
+                      labels =scales::comma,
+                      breaks = seq(0, 1.5e6, by=2e5)) +
+  scale_y_continuous(limits = c(0,23),
+                     breaks = seq(0,23, by = 1)) +
   theme_classic()
+dev.off()
 
 
 # Mapa de calor por Comentarios
+png("../imagenes/fig3.png",height = 800, width = 1000, res = 120)
 post2 %>% select(-type) %>%
   group_by(Dia,Hora) %>%
   summarise_each(funs(sum(.,na.rm=T))) %>%
   gather(interacciones ,Reacciones, -Dia, -Hora) %>% 
   filter(interacciones == "comments_count") %>% 
-  ggplot(aes(Dia, Hora))+ 
+  ggplot(aes(Dia, Hora)) +
+  xlab("") +
   geom_tile(aes(fill = Reacciones), colour = "gray") + 
-  scale_fill_gradient(low = "white", high = "red", 
-                      name="Número de \n comentarios") +
+  scale_fill_gradient(low = "white", 
+                      high = "steelblue", 
+                      labels =scales::comma) +
+  scale_y_continuous(limits = c(0,23),
+                     breaks = seq(0,23, by = 1)) +
   theme_classic()
+dev.off()
+
 
 # Mapa de calor por Shares
+png("../imagenes/fig4.png",height = 800, width = 1000, res = 120)
 post2 %>% select(-type) %>%
   group_by(Dia,Hora) %>%
   summarise_each(funs(sum(.,na.rm=T))) %>%
   gather(interacciones,Reacciones,-Dia,-Hora) %>% 
   filter(interacciones == "shares_count") %>% 
-  ggplot(aes(Dia,Hora))+ 
+  ggplot(aes(Dia,Hora)) +
+  xlab("") +
   geom_tile(aes(fill = Reacciones),colour = "gray") + 
-  scale_fill_gradient(low = "white", high = "red", 
-                      name="Número de \n veces compartido") + 
-  #formatter=labels::comma) +
+  scale_fill_gradient(low = "white", 
+                      high = "steelblue", 
+                      labels =scales::comma,
+                      breaks = seq(0,3e5,5e4)) +
+  scale_y_continuous(limits = c(0,23),
+                     breaks = seq(0,23, by = 1)) +
   theme_classic()
+dev.off()
 
 
 # Red de interacciones bipartita por hora  
-post2 %>% select(-Dia,-type) %>%
-  group_by(Hora) %>%
-  summarise_each(funs(sum(.,na.rm=T))) %>% .[-1] %>%
-  plotweb(method="normal",
-          text.rot=90,
-          low.lablength=7,
-          high.lablength=5,
-          col.high =  "white",
-          col.low="lavender",
-          col.interaction="black",
-          bor.col.interaction="green4",
-          y.width.low=.07,
-          y.width.high=.07)
+# post2 %>% select(-Dia,-type) %>%
+#   group_by(Hora) %>%
+#   summarise_each(funs(sum(.,na.rm=T))) %>% .[-1] %>%
+#   plotweb(method="normal",
+#           text.rot=90,
+#           low.lablength=7,
+#           high.lablength=5,
+#           col.high =  "white",
+#           col.low="lavender",
+#           col.interaction="black",
+#           bor.col.interaction="green4",
+#           y.width.low=.07,
+#           y.width.high=.07)
 
 
 # Red de interacciones bipartita por día
-post2 %>% select(-Hora,-type) %>%
-  group_by(Dia) %>%
-  summarise_each(funs(sum(.,na.rm=T))) %>% .[-1] %>%
-  plotweb(method="normal",
-          text.rot=90,
-          low.lablength=7,
-          high.lablength=5,
-          col.high =  "white",
-          col.low="lavender",
-          col.interaction="black",
-          bor.col.interaction="green4",
-          y.width.low=.07,
-          y.width.high=.07)
+# post2 %>% select(-Hora,-type) %>%
+#   group_by(Dia) %>%
+#   summarise_each(funs(sum(.,na.rm=T))) %>% .[-1] %>%
+#   plotweb(method="normal",
+#           text.rot=90,
+#           low.lablength=7,
+#           high.lablength=5,
+#           col.high =  "white",
+#           col.low="lavender",
+#           col.interaction="black",
+#           bor.col.interaction="green4",
+#           y.width.low=.07,
+#           y.width.high=.07)
+
 
 
 ### **************** Comparar tipo de contenido ****************** ###
@@ -316,35 +345,44 @@ modelo <- glm(valor~type+Hora*Dia,poisson, SumConPosteoCuenta) %>%
 modelo %>%
   mutate(Porc = Deviance/head(`Resid. Dev`,1)*100)
 
+# Error
+tail(modelo$`Resid. Dev`,1)/head(modelo$`Resid. Dev`,1)*100
+
 
 SumConPosteo <- SumConPosteo %>% 
   mutate(Dia =factor(SumConPosteo$Dia, 
                      levels(droplevels.factor(SumConPosteo$Dia))[c(1,3,4,5,2,7,6)]))
 
+
+
+## Gráfica para comparación de tipo de posteo
+png("../imagenes/fig8.png",width = 1000, height = 800, res = 110)
+quilava <- pokepal(pokemon = "quilava", spread=12)[1:12]
 SumConPosteo %>%
-  ggplot(aes(x=type,y=valor,col=Dia)) +
-  geom_boxplot() +
-  # facet_wrap(~type,ncol=2,scales=c("free")) +
-  scale_fill_brewer(palette = "Set3") +
-  theme_gray() +
-  # theme(axis.text.x = element_text(angle=0, hjust=0.5),
-        # legend.position = "top")+
-  ylab("Número de Reacciones")+
+  filter(! type %in% c("status", "event")) %>% 
+  mutate(type=ifelse(type=="link", "Gif", 
+                     ifelse(type=="photo", "Foto", "Video"))) %>% 
+  ggplot(aes(x=type,y=valor,fill=Dia)) +
+  geom_boxplot(col="black") +
+  theme_classic() +
+  ylab("Número de Interacciones")+
   xlab("Tipo de posteo") +
-  scale_y_continuous(labels = scales::comma)
+  theme(legend.position="top")+
+  scale_y_continuous(labels = scales::comma)+
+  scale_color_manual(values = quilava, name="Día")
+dev.off()
 
-
-SumConPosteo %>%
-  ggplot(aes(x=n,y=valor,col=reaccion)) +
-  geom_point() +
-  facet_wrap(~type,ncol=2,scales=c("free")) +
-  scale_fill_brewer(palette = "Set3") +
-  theme_gray() +
-  theme(axis.text.x = element_text(angle=0, hjust=0.5),
-        legend.position = "top")+
-  ylab("Número de Reacciones")+
-  xlab("Número de posteos") +
-  scale_y_continuous(labels = scales::comma)
+# SumConPosteo %>%
+#   ggplot(aes(x=n,y=valor,col=reaccion)) +
+#   geom_point() +
+#   facet_wrap(~type,ncol=2,scales=c("free")) +
+#   scale_fill_brewer(palette = "Set3") +
+#   theme_gray() +
+#   theme(axis.text.x = element_text(angle=0, hjust=0.5),
+#         legend.position = "top")+
+#   ylab("Número de Reacciones")+
+#   xlab("Número de posteos") +
+#   scale_y_continuous(labels = scales::comma)
 
 ### **************** Comparar tipo de contenido ****************** ###
 ### ********************* Sin comentarios ************************ ###
@@ -388,28 +426,9 @@ rangos <- rangos %>%
   mutate(rango = row_number(-valor))
 
 
-# Rangos por Interacciones Totales
-rangos %>%
-  mutate(DH = capitaliza(DH)) %>% 
-  # filter(tipo=="comments_count") %>%
-  group_by(tipo) %>% 
-  filter(rango<21) %>% 
-  ggplot(aes(x= rango, y= valor, fill = tipo))+
-  xlab("Rango") +
-  ylab("Número de Interacciones Totales") +
-  geom_point(color="steelblue", size=4) +
-  geom_line(color="darkred")+
-  theme_bw()
-  # geom_text(vjust =1, hjust=-.2, angle = 45, aes(x =rango, y = valor, label=DH)) +
-  # scale_y_continuous(limits = c(4e3,12e5),
-  #                    labels = scales::comma,
-  #                    breaks = seq(4e3,12e5, by = .2e6)) +
-  # scale_x_continuous(limits = c(1,21),breaks = 1:21)
-  
-
 # Rangos por Comentarios
+png("../imagenes/fig5.png",height = 800, width = 1200, res = 120)
 rangos %>%
-  mutate(DH = capitaliza(DH)) %>% 
   filter(tipo=="comments_count") %>%
   filter(rango<21) %>% 
   ggplot(aes(x= rango, y= valor ))+
@@ -418,16 +437,18 @@ rangos %>%
   geom_point(color="steelblue", size=4) +
   geom_line(color="darkred")+
   theme_bw()+
-  geom_text(vjust =1, hjust=-.2, angle = 45, aes(x =rango, y = valor, label=DH)) +
+  geom_text(vjust =1, hjust=-.2, angle = 45, 
+            aes(x =rango, y = valor, label=DH)) +
   scale_y_continuous(limits = c(10000,39000),
                      labels = scales::comma,
                      breaks = seq(1e4,4e4, by = .5e4)) +
   scale_x_continuous(limits = c(1,21),breaks = 1:21)
+dev.off()
 
 
 # Rangos por veces compartido
+png("../imagenes/fig6.png",height = 800, width = 1300, res = 120)
 rangos %>%
-  mutate(DH = capitaliza(DH)) %>% 
   filter(tipo=="shares_count") %>%
   filter(rango<21) %>% 
   ggplot(aes(x= rango, y= valor ))+
@@ -436,16 +457,19 @@ rangos %>%
   geom_point(color="steelblue", size=4) +
   geom_line(color="darkred")+
   theme_bw()+
-  geom_text(vjust =1, hjust=-.2, angle = 45, aes(x =rango, y = valor, label=DH)) +
+  geom_text(vjust =1, hjust=-.2, angle = 45, 
+            aes(x =rango, y = valor, label=DH)) +
   scale_y_continuous(limits = c(44000,210000),
                      labels = scales::comma,
                      breaks = seq(44e3,21e4, by = .2e5)) +
   scale_x_continuous(limits = c(1,21),breaks = 1:21)
+dev.off()
+
 
 
 # Rangos por Reacciones Totales
+png("../imagenes/fig7.png",height = 800, width = 1400, res = 120)
 rangos %>%
-  mutate(DH = capitaliza(DH)) %>% 
   filter(tipo=="reaccionesTotales") %>%
   filter(rango<21) %>% 
   ggplot(aes(x= rango, y= valor )) +
@@ -454,12 +478,13 @@ rangos %>%
   geom_point(color="steelblue", size=4) +
   geom_line(color="darkred") +
   theme_bw()+
-  geom_text(vjust =1, hjust=-.2, angle = 45, aes(x =rango, y = valor, label=DH)) +
+  geom_text(vjust =1, hjust=-.2, angle = 45, 
+            aes(x =rango, y = valor, label=DH)) +
   scale_y_continuous(limits = c(4.8e5,12.2e5),
                      labels = scales::comma,
                      breaks = seq(4.8e5,12.2e5, by = 5.5e4)) +
   scale_x_continuous(limits = c(1,21),breaks = 1:21)
-
+dev.off()
 
 
 
