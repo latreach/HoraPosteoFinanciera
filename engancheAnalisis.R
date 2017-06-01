@@ -8,7 +8,7 @@
 # Librerías ---------------------------------------------------------------
 library(magrittr)
 c("data.table", "dplyr", "lubridate", "ggplot2", "lattice", "purrr",
-  "Rfacebook", "betareg", "broom", "tidyr") %>% 
+  "Rfacebook", "betareg", "broom", "tidyr", "xts", "dygraphs") %>% 
   sapply(require, character.only=T)
 
 # Conexión FB -------------------------------------------------------------
@@ -38,6 +38,10 @@ capitaliza=  function(x){
   return(x)
 }
 
+porcentaje <- function(x){
+  y = paste(x, "%", sep="")
+  return(y)
+}
 
 # Recolección de datos ----------------------------------------------------
 
@@ -48,8 +52,8 @@ capitaliza=  function(x){
 # })
 # 
 # datosFB <- do.call("rbind", datosFB)
-# datosFB %>% 
-#   data.frame %>% 
+# datosFB %>%
+#   data.frame %>%
 #   write.csv("~/local/Sonia/HoraPosteoFinanciera/datos/datosEnganche.csv",
 #             row.names=F)
 
@@ -141,8 +145,8 @@ modelos2 %>%
 
 
 # Gráficos ----------------------------------------------------------------
-dias <- c("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", 
-          "Sábado", "Domingo")
+dias <- c("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", 
+          "Sábado")
 
 dataFb$diaSeman <- factor(dataFb$diaSeman,levels = dias)
 
@@ -184,6 +188,44 @@ dataFb %>%
   # theme(plot.title = element_text(hjust=0.5))
 dev.off()
 
+
+promedioEnganche <- dataFb %>%
+  group_by(Hora, diaSeman, Cuenta) %>% 
+  summarise(promedioEnganche = mean(enganche))
+
+
+promedioEnganche$diaSeman <- factor(promedioEnganche$diaSeman, levels = dias)
+
+# coloresBrew = c('#ef8a62','#f7f7f7','#67a9cf')
+# coloresBrew = c('white', '#a6cee3','#1f78b4','#b2df8a', "darkgreen")
+coloresBrew = c( 'gray50','#a6cee3','#1f78b4','#b2df8a', "darkgreen")
+png("figuraEnganche1.png",height = 800, width = 1000, res = 120)
+promedioEnganche %>%  
+  filter(Cuenta=="SEAT") %>% 
+  mutate(promedioEnganche = promedioEnganche*100) %>%
+  ggplot(aes(x = diaSeman, y =Hora))+
+  geom_tile(aes(fill=promedioEnganche), col="black")+
+  theme_classic()+
+  scale_fill_gradientn(colours = coloresBrew,
+                       breaks =seq(0, 0.4, by=0.05),
+                       labels = porcentaje,
+                       name="Enganche") +
+  xlab("") + ylab("Hora")
+dev.off()
+
+png("figuraEnganche2.png",height = 800, width = 1000, res = 120)
+promedioEnganche %>%  
+  filter(Cuenta=="VWFS") %>% 
+  mutate(promedioEnganche = promedioEnganche*100) %>% 
+  ggplot(aes(x = diaSeman, y =Hora))+
+  geom_tile(aes(fill=promedioEnganche), col="black")+
+  theme_classic()+
+  scale_fill_gradientn(colours = coloresBrew,
+                       breaks = seq(0, 6, by=1),
+                       labels = porcentaje,
+                       name="Enganche")+
+  xlab("")
+dev.off()
 
 test1 <- dataFb %>%  
   filter(Cuenta=="SEAT") %>% 

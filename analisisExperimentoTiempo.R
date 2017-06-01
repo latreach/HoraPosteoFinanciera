@@ -1,8 +1,9 @@
-####################################   
-#Creado por Área de Data Science    <(°) 
-# Fernando Dorantes Nieto             ( >)"
-# Christian Daniel Morán Titla         /|
 ####################################
+#                                                   ^ ^
+# Creado por el Área de Data Science    <(°)      =(°-°)=         
+# Fernando Dorantes Nieto                 ( >)"    (   )S  
+#                                          /|       w w
+# Christian Daniel Morán Titla
 
 # Librerías ---------------------------------------------------------------
 library(magrittr)
@@ -96,6 +97,22 @@ sumaPosteo <- post %>%
 conteoPosteo <- post %>%  
   select(-id) %>% 
   group_by(Dia, Hora, type) %>%  tally 
+
+post %>% 
+  mutate(reaccionesTotales = rowSums(.[, c(2,7:13)])) %>% 
+  group_by(from_name) %>%  
+  summarise(reaccionesTotales = sum(reaccionesTotales,na.rm = T)) %>% 
+  data.frame %>% 
+  toLatex()
+
+
+post %>% head
+  select(from_name)
+  group_by(from_name) %>%  tally %>% 
+  mutate(n = floor(n)) %>% 
+  mutate(n = round(n)) %>% 
+  data.frame %>% 
+  toLatex()
 
 # Unir tabla de sumas de reacciones a número de posteos
 SumConPosteo <- merge(sumaPosteo,conteoPosteo,by=c("Dia","Hora","type"))
@@ -225,19 +242,28 @@ post2 %>% select(-type) %>%
 
 
 # Mapa de calor Interacciones Totales
-png("../imagenes/fig1.png",height = 800, width = 1000, res = 120)
-post2 %>% select(-type) %>%
+# coloresBrew = c('#ece2f0','#a6bddb','#1c9099' )
+coloresBrew = c('#ef8a62','#f7f7f7','#67a9cf')
+coloresBrew = c('gray50','#a6cee3','#1f78b4','#b2df8a', "darkgreen")
+setwd("~/local/Sonia/HoraPosteoFinanciera/imagenes/")
+png("figura5.png",height = 800, width = 1000, res = 120)
+post2 %>% 
+  select(-type) %>%
   group_by(Dia, Hora) %>%
   summarise_each(funs(sum(.,na.rm=T))) %>%
   gather(interacciones, Reacciones, -Dia, -Hora) %>%
   ggplot(aes(Dia,Hora))+
   xlab("") +
-  geom_tile(aes(fill = Reacciones), colour = "gray") + 
-  scale_fill_gradient(name = "Interacciones \n Totales",
-                      low = "white", 
-                      high = "steelblue", 
-                      labels =scales::comma,
-                      breaks = seq(0, 1.5e6, by=2e5)) +
+  geom_tile(aes(fill = Reacciones), colour = "black") + 
+  scale_fill_gradientn(colours = coloresBrew,
+                       labels =scales::comma,
+                       breaks = seq(0, 1.5e6, by=2e5))+
+  # scale_fill_gradient2(name = "Interacciones \n Totales",
+  #                      low =  "white",
+  #                      high = "steelblue",
+  #                      mid = "white",
+  #                      labels =scales::comma,
+  #                      breaks = seq(0, 1.5e6, by=2e5)) +
   scale_y_continuous(limits = c(0,23),
                      breaks = seq(0,23, by = 1)) +
   theme_classic()
@@ -245,7 +271,7 @@ dev.off()
 
 
 # Mapa de calor por Reacciones
-png("../imagenes/fig2.png",height = 800, width = 1000, res = 120)
+png("figura6.png",height = 800, width = 1000, res = 120)
 post2 %>% select(-type) %>%
   group_by(Dia,Hora) %>%
   summarise_each(funs(sum(.,na.rm=T))) %>%
@@ -253,12 +279,16 @@ post2 %>% select(-type) %>%
   filter(interacciones == "reaccionesTotales") %>% 
   ggplot(aes(Dia,Hora))+
   xlab("") +
-  geom_tile(aes(fill = Reacciones),colour = "gray") + 
-  scale_fill_gradient(name = "Reacciones",
-                      low = "white", 
-                      high = "steelblue", 
-                      labels =scales::comma,
-                      breaks = seq(0, 1.5e6, by=2e5)) +
+  geom_tile(aes(fill = Reacciones),colour = "black") + 
+  scale_fill_gradientn(name="Reacciones",
+                       colours = coloresBrew,
+                       labels =scales::comma,
+                       breaks = seq(0, 1.5e6, by=2e5))+
+  # scale_fill_gradient(name = "Reacciones",
+  #                     low = "white", 
+  #                     high = "steelblue", 
+  #                     labels =scales::comma,
+  #                     breaks = seq(0, 1.5e6, by=2e5)) +
   scale_y_continuous(limits = c(0,23),
                      breaks = seq(0,23, by = 1)) +
   theme_classic()
@@ -266,7 +296,7 @@ dev.off()
 
 
 # Mapa de calor por Comentarios
-png("../imagenes/fig3.png",height = 800, width = 1000, res = 120)
+png("figura7.png",height = 800, width = 1000, res = 120)
 post2 %>% select(-type) %>%
   group_by(Dia,Hora) %>%
   summarise_each(funs(sum(.,na.rm=T))) %>%
@@ -274,11 +304,14 @@ post2 %>% select(-type) %>%
   filter(interacciones == "comments_count") %>% 
   ggplot(aes(Dia, Hora)) +
   xlab("") +
-  geom_tile(aes(fill = Reacciones), colour = "gray") + 
-  scale_fill_gradient(name = "Comentarios",
-                      low = "white", 
-                      high = "steelblue", 
-                      labels =scales::comma) +
+  geom_tile(aes(fill = Reacciones), colour = "black") + 
+  scale_fill_gradientn(name="Comentarios",
+                       colours = coloresBrew,
+                       labels =scales::comma)+
+  # scale_fill_gradient(name = "Comentarios",
+  #                     low = "white", 
+  #                     high = "steelblue", 
+  #                     labels =scales::comma) +
   scale_y_continuous(limits = c(0,23),
                      breaks = seq(0,23, by = 1)) +
   theme_classic()
@@ -286,7 +319,7 @@ dev.off()
 
 
 # Mapa de calor por Shares
-png("../imagenes/fig4.png",height = 800, width = 1000, res = 120)
+png("figura8.png",height = 800, width = 1000, res = 120)
 post2 %>% select(-type) %>%
   group_by(Dia,Hora) %>%
   summarise_each(funs(sum(.,na.rm=T))) %>%
@@ -294,12 +327,16 @@ post2 %>% select(-type) %>%
   filter(interacciones == "shares_count") %>% 
   ggplot(aes(Dia,Hora)) +
   xlab("") +
-  geom_tile(aes(fill = Reacciones),colour = "gray") + 
-  scale_fill_gradient(name = "Número de veces \n compartido",
-                      low = "white", 
-                      high = "steelblue", 
-                      labels =scales::comma,
-                      breaks = seq(0,3e5,5e4)) +
+  geom_tile(aes(fill = Reacciones),colour = "black") + 
+  scale_fill_gradientn(name="Número de veces \n compartido",
+                       colours = coloresBrew,
+                       labels =scales::comma,
+                       breaks = seq(0, 3e5, by=5e4))+
+  # scale_fill_gradient(name = "Número de veces \n compartido",
+  #                     low = "white", 
+  #                     high = "steelblue", 
+  #                     labels =scales::comma,
+  #                     breaks = seq(0,3e5,5e4)) +
   scale_y_continuous(limits = c(0,23),
                      breaks = seq(0,23, by = 1)) +
   theme_classic()

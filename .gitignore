@@ -3,4 +3,4 @@ referencias/
 *.log
 *.aux
 *.out
-
+*.tex.backup
