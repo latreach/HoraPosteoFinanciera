@@ -459,7 +459,7 @@ rangos %>%
   theme_classic()+
   geom_text(vjust =1, hjust=-.2, angle = 45, 
             aes(x =rango, y = valor, label=DH)) +
-  scale_y_continuous(limits = c(44000,210000),
+  scale_y_continuous(limits = c(44000,212000),
                      labels = scales::comma,
                      breaks = seq(44e3,21e4, by = .2e5)) +
   scale_x_continuous(limits = c(1,21),breaks = 1:21)
@@ -480,7 +480,7 @@ rangos %>%
   theme_classic()+
   geom_text(vjust =1, hjust=-.2, angle = 45, 
             aes(x =rango, y = valor, label=DH)) +
-  scale_y_continuous(limits = c(4.8e5,12.2e5),
+  scale_y_continuous(limits = c(4.8e5,12.4e5),
                      labels = scales::comma,
                      breaks = seq(4.8e5,12.2e5, by = 5.5e4)) +
   scale_x_continuous(limits = c(1,21),breaks = 1:21)
