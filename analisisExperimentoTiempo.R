@@ -6,8 +6,8 @@
 
 # Librerías ---------------------------------------------------------------
 library(magrittr)
-c("dplyr", "tidyr", "ggplot2", "lubridate", "bipartite",
-  "lubridate", "lme4", "car", "lattice", "vegan") %>% 
+c( "tidyr", "ggplot2", "lubridate", "bipartite",
+  "lubridate", "lme4", "car", "lattice", "vegan", "memisc", "dplyr") %>% 
   sapply(require, character.only=T)
 
 ##Sembrando directorio
@@ -43,8 +43,9 @@ capitaliza=  function(x){
 
 # Utilizar sólo columnas designadas a posteos y al id, cuenta, dia
 # y hora de posteos
+post %>%  head
 post <- post %>%
-  select(id, likes_count, from_name, created_time, type, 
+  dplyr::select(id, likes_count, from_name, created_time, type, 
          comments_count, shares_count, love_count, haha_count, 
          wow_count, sad_count, angry_count) %>% 
   separate(created_time,c("Dia","Hora"),sep="T") %>% 
@@ -60,7 +61,6 @@ post <- post %>%
   mutate(Hora = as.numeric(Hora)) %>% 
   filter(type!="offer")
   
-
 # post <- post %>%
 #   mutate(Dia =factor(post$Dia, levels(post$Dia)[c(1,3,4,5,2,7,6)]))
 
@@ -225,7 +225,7 @@ post2 %>% select(-type) %>%
   nested(method="NODF2")
 
 
-# Mapa de calor total
+# Mapa de calor Interacciones Totales
 png("../imagenes/fig1.png",height = 800, width = 1000, res = 120)
 post2 %>% select(-type) %>%
   group_by(Dia, Hora) %>%
@@ -244,7 +244,7 @@ post2 %>% select(-type) %>%
 dev.off()
 
 
-# Mapa de calor por Reacciones Totales
+# Mapa de calor por Reacciones
 png("../imagenes/fig2.png",height = 800, width = 1000, res = 120)
 post2 %>% select(-type) %>%
   group_by(Dia,Hora) %>%
@@ -347,6 +347,16 @@ modelo %>%
 
 # Error
 tail(modelo$`Resid. Dev`,1)/head(modelo$`Resid. Dev`,1)*100
+
+
+### Mixto
+modeloMixto1 <- glmer(valor~type+Hora*Dia+(1|from_name),
+                family="poisson", SumConPosteoCuenta)
+
+modeloMixto1 <- Anova(modeloMixto1, type = 2)
+
+
+toLatex(modeloMixto1)
 
 
 SumConPosteo <- SumConPosteo %>% 
