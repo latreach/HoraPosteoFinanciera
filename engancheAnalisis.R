@@ -8,7 +8,7 @@
 # Librerías ---------------------------------------------------------------
 library(magrittr)
 c("data.table", "dplyr", "lubridate", "ggplot2", "lattice", "purrr",
-  "Rfacebook", "betareg", "broom") %>% 
+  "Rfacebook", "betareg", "broom", "tidyr") %>% 
   sapply(require, character.only=T)
 
 # Conexión FB -------------------------------------------------------------
@@ -24,7 +24,7 @@ ids <- c(113144262054871, 282547551846127)
 
 
 ##Parámetros fijos de las gráficas
-theme_set(theme_bw())
+#theme_set(theme_bw())
 
 
 ##Funciones 
@@ -152,7 +152,9 @@ dataFb<- dataFb %>%
               group_by(diaSeman, Cuenta) %>% 
               tally)
 
-x11()
+setwd("~/local/Sonia/HoraPosteoFinanciera/imagenes/")
+
+png("engancheSeat.png", width = 1200, height = 800, res = 100)
 dataFb %>%  
   filter(Cuenta=="SEAT") %>% 
   data.table %>% 
@@ -162,11 +164,12 @@ dataFb %>%
   theme(strip.background = element_rect(fill="white"))+
   facet_wrap(~diaSeman)+
   ylab("Enganche") + xlab("Hora")+
-  geom_label(aes(x= 12, y=0.4, label=paste("Número de posteos:", n, sep=" ")))+
-  ggtitle("Enganche de los posteos de SEAT \n por día y hora de publicación \n (2016-01-01/2017-05-15)")+
-  theme(plot.title = element_text(hjust=0.5))
+  geom_label(aes(x= 12, y=0.4, label=paste("Número de posteos:", n, sep=" ")))
+  # ggtitle("Enganche de los posteos de SEAT \n por día y hora de publicación \n (2016-01-01/2017-05-15)")+
+  # theme(plot.title = element_text(hjust=0.5))
+dev.off()
 
-x11()
+png("engancheVwfs.png", width = 1200, height = 800, res = 100)
 dataFb %>%  
   filter(Cuenta=="VWFS") %>% 
   data.table %>% 
@@ -176,9 +179,10 @@ dataFb %>%
   theme(strip.background = element_rect(fill="white"))+
   facet_wrap(~diaSeman)+
   ylab("Enganche") + xlab("Hora")+
-  geom_label(aes(x= 12, y=12, label=paste("Número de posteos:", n, sep=" ")))+
-  ggtitle("Enganche de los posteos de VWFS \n por día y hora de publicación")+
-  theme(plot.title = element_text(hjust=0.5))
+  geom_label(aes(x= 12, y=12, label=paste("Número de posteos:", n, sep=" ")))
+  # ggtitle("Enganche de los posteos de VWFS \n por día y hora de publicación")+
+  # theme(plot.title = element_text(hjust=0.5))
+dev.off()
 
 
 test1 <- dataFb %>%  
