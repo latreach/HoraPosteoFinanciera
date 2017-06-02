@@ -8,7 +8,8 @@
 # Librerías ---------------------------------------------------------------
 library(magrittr)
 c( "tidyr", "ggplot2", "lubridate", "bipartite",
-  "lubridate", "lme4", "car", "lattice", "vegan", "memisc", "dplyr") %>% 
+  "lubridate", "lme4", "car", "lattice", "vegan", 
+  "memisc", "dplyr", "lattice", "nlme") %>% 
   sapply(require, character.only=T)
 
 ##Sembrando directorio
@@ -61,27 +62,6 @@ post <- post %>%
   mutate(Hora = as.numeric(Hora)) %>% 
   filter(type!="offer")
   
-# post <- post %>%
-#   mutate(Dia =factor(post$Dia, levels(post$Dia)[c(1,3,4,5,2,7,6)]))
-
-
-# post %>% 
-#   select(-id, -type) %>% 
-#   #filter(from_name=="SEAT México") %>%
-#   select(-from_name) %>% 
-#   group_by(Dia,Hora) %>% 
-#   summarise_each(funs(sum)) %>% 
-#   gather(tipo, valor, -Dia, -Hora) %>% 
-#   filter(tipo=="love_count") %>% 
-#   ggplot(aes(x=Hora,y=valor,fill=Dia)) +
-#   geom_bar(stat = "identity",colour="black") +
-#   facet_wrap(~Dia,ncol=2) +
-#   scale_fill_brewer(palette = "Set3") +
-#   theme_classic() +
-#   theme(axis.text.x = element_text(angle=45, hjust=1),
-#         legend.position = "")+
-#   ylab("Número de interacciones")+
-#   scale_y_continuous(labels = scales::comma)
 
 
 # Sumas de reacciones en función del Día, Hora y tipo de posteo
@@ -106,13 +86,14 @@ post %>%
   toLatex()
 
 
-post %>% head
+post %>%
   select(from_name)
   group_by(from_name) %>%  tally %>% 
   mutate(n = floor(n)) %>% 
   mutate(n = round(n)) %>% 
   data.frame %>% 
   toLatex()
+
 
 # Unir tabla de sumas de reacciones a número de posteos
 SumConPosteo <- merge(sumaPosteo,conteoPosteo,by=c("Dia","Hora","type"))
@@ -176,7 +157,8 @@ SumConPosteoCuenta <- merge(sumaPosteoCuenta,conteoPosteoCuenta,
 # Agrupar reacciones y número de posteos en función de Día, Hora, 
 # tipo reacción y cuenta
 SumConPosteoCuenta <- SumConPosteoCuenta %>%
-  gather(reaccion,valor,-n,-Dia,-Hora,-type,-from_name)
+  gather(reaccion,valor,-n,-Dia,-Hora,-type,-from_name) %>% 
+  mutate(Hora = as.character(Hora))
 
 
 # Relación entre suma de posteos en función del número de posteos por cuenta
@@ -199,7 +181,9 @@ glmer(valor~n*reaccion+(1|from_name),
 glmer(valor~n*reaccion+(1|from_name), 
       data= SumConPosteoCuenta, 
       family = "poisson") %>%
-  Anova(test="Chisq")
+  summary()
+
+
 
 
 # SumConPosteoCuenta %>%
@@ -344,19 +328,19 @@ dev.off()
 
 
 # Red de interacciones bipartita por hora  
-# post2 %>% select(-Dia,-type) %>%
-#   group_by(Hora) %>%
-#   summarise_each(funs(sum(.,na.rm=T))) %>% .[-1] %>%
-#   plotweb(method="normal",
-#           text.rot=90,
-#           low.lablength=7,
-#           high.lablength=5,
-#           col.high =  "white",
-#           col.low="lavender",
-#           col.interaction="black",
-#           bor.col.interaction="green4",
-#           y.width.low=.07,
-#           y.width.high=.07)
+post2 %>% select(-Dia,-type) %>%
+  group_by(Hora) %>%
+   summarise_each(funs(sum(.,na.rm=T))) %>% .[-1] %>%
+   plotweb(method="normal",
+           text.rot=90,
+           low.lablength=7,
+           high.lablength=5,
+           col.high =  "white",
+           col.low="lavender",
+           col.interaction="black",
+           bor.col.interaction="green4",
+           y.width.low=.07,
+           y.width.high=.07)
 
 
 # Red de interacciones bipartita por día
@@ -381,13 +365,14 @@ glm(valor~type+Hora*Dia,poisson, SumConPosteoCuenta) %>% summary
 modelo <- glm(valor~type+Hora*Dia,poisson, SumConPosteoCuenta) %>%
   anova(test="Chisq")
 
+
+# Modelos -----------------------------------------------------------------
 # Tabla de devianza
 modelo %>%
   mutate(Porc = Deviance/head(`Resid. Dev`,1)*100)
 
 # Error
 tail(modelo$`Resid. Dev`,1)/head(modelo$`Resid. Dev`,1)*100
-
 
 ### Mixto
 modeloMixto1 <- glmer(valor~type+Hora*Dia+(1|from_name),
@@ -537,11 +522,44 @@ rangos %>%
 dev.off()
 
 
+#  Análisis ---------------------------------------------------------------
+Posteos <- post %>%
+  data.table %>% 
+  .[, totales := rowSums(.[, c(2,7:13)])] %>%  
+  .[, reaccionesTotales := rowSums(.[, c(2, 9:13)])] %>%
+  select(from_name, Dia, Hora, type, comments_count, 
+         shares_count, reaccionesTotales, totales) 
+
+mixto1 <- glmer(totales~type+Dia*Hora+(1|from_name),
+      data= Posteos, family = "poisson") 
+
+mixto2 <- glmer(reaccionesTotales~type+Dia*Hora+(1|from_name),
+      data= Posteos, family = "poisson") 
+
+mixto3 <- glmer(comments_count~type+Dia*Hora+(1|from_name),
+      data= Posteos, family = "poisson") 
+
+mixto4 <- glmer(shares_count~type+Dia*Hora+(1|from_name),
+      data= Posteos, family = "poisson") 
 
 
 
+Posteos %>%  
+  filter(!type %in% c("status", "event") ) %>% 
+  ggplot(aes(x = Dia, y = comments_count, fill=type))+
+  geom_violin()+
+  facet_wrap(~from_name*type, scales="free_y") +
+  theme_classic()+
+  theme(axis.text.x = element_text(angle=45, hjust=1))
 
-
+Posteos %>%  
+  filter(!type %in% c("status", "event") ) %>% 
+  ggplot(aes(x = Dia, y = reaccionesTotales, fill=type))+
+  geom_violin()+
+  facet_wrap(~from_name*type, scales="free_y") +
+  theme_classic()+
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+  
 
 
 
