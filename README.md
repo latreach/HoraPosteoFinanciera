@@ -10,11 +10,11 @@
 
 ## Lenguajes de programación utilizados
 ### Estadística
-#### R
+[R](https://www.r-project.org/)
 ### Recolección de datos 
-#### R y Python
+[R](https://www.r-project.org/) y [Python](https://www.python.org/)
 ### Reporte escrito en
-#### Latex
+[Latex](https://www.latex-project.org/)
 
 ## Licencia
 GNU-GPL v3 más información aquí: [licencia](https://github.com/latreach/HoraPosteoFinanciera/blob/master/LICENSE).
