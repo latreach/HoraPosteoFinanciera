@@ -2,16 +2,17 @@
 \documentclass[a4paper,10pt]{article}
 \usepackage[total={18cm,20cm}, top=1.5cm, left=1.5cm]{geometry}
 \usepackage[spanish]{babel}
+\renewcommand\spanishtablename{Tabla}
 \usepackage[utf8]{inputenc}
-% \usepackage[latin1]{inputenc}
+%\usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{caption}
 \usepackage{graphicx}
 \usepackage{subfigure}
 \usepackage{fancyhdr}
 \usepackage{setspace}
 \usepackage{hyperref}
 \usepackage{multirow}
-\usepackage{caption}
 \usepackage{float}
 
 \renewcommand{\baselinestretch}{1.5}
@@ -21,11 +22,14 @@
 
 % \fancyfoot[R]{\includegraphics[width=5mm]{./imagenes/logo.png}}
 
-\title{Comparando tiempos de publicación de redes sociales de automotrices. ¿Cuáles son los mejores días y horas para publicar?}
+\title{Comparando tiempos de publicación de redes sociales de automotrices. 
+¿Cuáles son los mejores días y horas para publicar?}
+
 \author{Social Data Mining \& Statistics \\
         Base10\\
         \scriptsize Dorantes Nieto Fernando ferdorantes@base10.mx \\
         \scriptsize Morán Titla Christian Daniel christian@base10.mx}
+
 % \subtitle{LatReach}
 \date{}
 
@@ -105,8 +109,7 @@ y la cuenta de SEAT, puesto que son las cuentas administradas por Base10 .
 
 
 \begin{center}
-Tabla 1
-\caption{\textbf{Tabla 1:} Cuentas analizadas con el link adjunto } \\[0.3cm] 
+\captionof{table} {Cuentas analizadas con el link adjunto. } \\[0.3cm] 
 {\footnotesize
    \begin{tabular} {l|l|l} 
     \hline
@@ -142,8 +145,8 @@ Tabla 1
 
 \subsection{Recolección de datos}
 Los datos de los perfiles de redes sociales se tomarán diréctamente de la API Graph de Facebook 
-versión 2.9 (Facebook for developers, 2017), las llamadas a la API se realizaron con el lenguaje de programación Python versión 2.7, 
-y el paquete Rfacebook (Barbera et al, 2017) del lenguaje de programación R (R Core Team, 2017).
+versión 2.9 (Facebook for developers, 2017), las llamadas a la API se realizaron con el lenguaje de programación Python
+versión 2.7, y el paquete Rfacebook (Barbera et al, 2017) del lenguaje de programación R (R Core Team, 2017).
 
 \subsection{Análisis estadísticos}
 Las diferencias del número de reacciones, comentarios y veces compartido ``shares'' 
@@ -154,7 +157,7 @@ Por otro lado para el caso del enganche y las impresiones, fueron
 analizadas separando por cuenta (SEAT y VWFS) tomando como variables
 explicativas el número de posteos, el tipo de publicación, el día y hora de 
 la publicación. Para hacer esta comparación, se realizaron modelos lineales generalizados (GLM)
-con distribución quasipoisson con liga ``log'', esto debido a que los residuales 
+con distribución quasibinomial con liga ``logit'', esto debido a que los residuales 
 presentaron sobredispersión.
 Todos los análisis estadísticos se realizaron con el lenguaje de programación
 R (R Core Team 2017) en conjunto con los paquetes ``lme4'' (Bates et al 2015), 
@@ -182,15 +185,21 @@ de la semana fue de 19 a 21 horas (Figuras 5 a 8), seguido del rango de 9
 a 12 horas. Tomando como los días de mayor actividad Miércoles a Viernes, 
 con una baja actividad los fines de semana (Sábado y Domingo). 
 
-Con respecto al enganche para las cuentas SEAT y VWFS, el
+Con respecto al  enganche para las cuentas SEAT y VWFS, el
 mayor enganche lo presentaron el día Jueves a las 22 y 17 horas
-respectivamente (Figuras 9 y 10).
+respectivamente (Figuras 9 a 12).
 
 El modelo mixto indica  que existe efecto del número
 de posteos realizados, del tipo de posteo, de la hora y
-del día del posteo. (Tabla 4)
+del día del posteo (\textit{p}<0.05)  sobre el
+total de reacciones, comentarios y número de veces compartido (Tablas 4 a 7).
 
-El modelo lineal generalizado para el enganche de la cuenta de SEAT 
+El enganche de SEAT se ve afectado principalmente por
+el número de posteos (71\% de la variación) seguido de 
+la hora (6.1\%) (Tabla 8). Para el caso del enganche de VWFS el día de la
+semana fue el que explica la mayor variación (25\%) seguido
+de la hora (21\%) (Tabla 9).
+
 
 
 
@@ -198,6 +207,21 @@ El modelo lineal generalizado para el enganche de la cuenta de SEAT
 
 
 \section{Discusión}
+
+\section{Conclusiones}
+De manera general, las interacciones se ven afectadas por una gran 
+cantidad de factores, tal es el caso de la hora y el día, 
+las mayores interacciones se obtienen 
+al postear entre las 18 y 21 horas tomando en cuenta el
+posteo entre los días Martes a Viernes, puesto que el fin de 
+semana la interacción es mucho menor.\\
+Para el caso del enganche, para VWFS la hora y el día
+del posteo si tuvieron un efecto en el porcentaje de personas  enganchadas,
+lo cual para el caso de SEAT cambia completamente
+puesto que el número de posteos realizados por cada día
+es mucho más influyente en el enganche.
+
+
 
 \section{Anexos}
 \subsection{Figuras}
@@ -288,57 +312,232 @@ El modelo lineal generalizado para el enganche de la cuenta de SEAT
   \end{center} 
 \end{figure}
 
-\\[10cm]
+\subsubsection{Figura 11}
+\begin{figure}[H]
+  \begin{center}
+   \includegraphics[width=.85\textwidth]{imagenes/engancheSeat}
+      \captionsetup{width=.80\textwidth}
+   \caption{\centering } 
+  \end{center} 
+\end{figure}
 
+
+\subsubsection{Figura 12}
+\begin{figure}[H]
+  \begin{center}
+   \includegraphics[width=.85\textwidth]{imagenes/engancheVwfs}
+      \captionsetup{width=.80\textwidth}
+   \caption{\centering } 
+  \end{center} 
+\end{figure}
 
 
 \subsection{Tablas}
 
-\centering Tabla 2
+\subsubsection{Tabla 2}
+
 \begin{center}
-\begin{tabular}{llD{.}{.}{7}}
-\toprule
-& \multicolumn{1}{c}{Cuenta} & \multicolumn{1}{c}{Número de posteos} \\
-\midrule
-1 & Audi de México & 1794 \\
-2 & BMW Mexico & 993 \\
-3 & Chevrolet & 930 \\
-4 & Dodge México & 854 \\
-5 & Honda México & 1344 \\
-6 & Hyundai México & 1101 \\
-7 & Kia Motors México & 1715 \\
-8 & Mazda México & 1505 \\
-9 & Nissan & 798 \\
-10 & SEAT México & 3542 \\
-11 & Toyota México & 1032 \\
-12 & Volkswagen & 1421 \\
-\bottomrule
-\end{tabular}
+  \captionof{table}{Número de posteos por cuenta.}\\[0.3cm]
+  \begin{tabular}{l|l|c}
+    \hline 
+    & Cuenta & Número de posteos \\
+    \hline
+    1 & Audi de México & 1794 \\
+    2 & BMW Mexico & 993 \\
+    3 & Chevrolet & 930 \\
+    4 & Dodge México & 854 \\
+    5 & Honda México & 1344 \\
+    6 & Hyundai México & 1101 \\
+    7 & Kia Motors México & 1715 \\
+    8 & Mazda México & 1505 \\
+    9 & Nissan & 798 \\
+    10 & SEAT México & 3542 \\
+    11 & Toyota México & 1032 \\
+    12 & Volkswagen & 1421 \\
+    \hline
+  \end{tabular}
 \end{center}
 
-\\
-Tabla 3
-\begin{center}
-\begin{tabular}{llD{.}{.}{7}}
-\toprule
-& \multicolumn{1}{c}{Cuenta} & \multicolumn{1}{c}{Número de reacciones} \\
-\midrule
-1 & Audi de México & 3,842,344 \\
-2 & BMW Mexico & 2,103,275 \\
-3 & Chevrolet & 4,258,177 \\
-4 & Dodge México & 1,735,909 \\
-5 & Honda México & 1,978,830 \\
-6 & Hyundai México & 1,189,251 \\
-7 & Kia Motors México & 5,380,232 \\
-8 & Mazda México & 4,164,856 \\
-9 & Nissan & 2,438,827 \\
-10 & SEAT México & 1,874,289 \\
-11 & Toyota México & 4,272,703 \\
-12 & Volkswagen & 19,298,782 \\
-\bottomrule
-\end{tabular}
+\subsubsection{Tabla 3}
 
+\begin{center}
+  \captionof{table}{Número de interacciones por cuenta.}\\[0.3cm]
+  \begin{tabular}{l|l|c}
+    \hline
+    & Cuenta & Número de interacciones \\
+    \hline
+    1 & Audi de México & 3,842,344 \\
+    2 & BMW Mexico & 2,103,275 \\
+    3 & Chevrolet & 4,258,177 \\
+    4 & Dodge México & 1,735,909 \\
+    5 & Honda México & 1,978,830 \\
+    6 & Hyundai México & 1,189,251 \\
+    7 & Kia Motors México & 5,380,232 \\
+    8 & Mazda México & 4,164,856 \\
+    9 & Nissan & 2,438,827 \\
+    10 & SEAT México & 1,874,289 \\
+    11 & Toyota México & 4,272,703 \\
+    12 & Volkswagen & 19,298,782 \\
+    \hline
+  \end{tabular}
 \end{center}
+
+
+
+\subsubsection{Tabla 4}
+\begin{center}
+  \captionof{table}{Resumen del modelo mixto generalizado de las interacciones totales. }\\[0.3cm]
+  \begin{tabular}{l|l|c|c|c|c}
+    \hline
+    & Factor & Estimado & Error estándar & Valor de \textit{P} & Tipo de factor\\
+    \hline
+    1 & Ordenada & 4.4697093 & 0.0978632 & < 0.001 & Fijo \\
+    2 & Tipo Gif/Link & 2.9667910 & 0.0321940 & < 0.001 & Fijo \\
+    3 & Tipo Foto & 3.1447253 & 0.0321907 & < 0.001 & Fijo \\
+    4 & Tipo Estatus & 0.9909772 & 0.0324501 & < 0.001 & Fijo \\
+    5 & Tipo Video & 2.9509620 & 0.0321921 & < 0.001 & Fijo \\
+    6 & Día Jueves & -0.0268273 & 0.0022629 & < 0.001 & Fijo \\
+    7 & Día Lunes & -0.1857828 & 0.0022620 & < 0.001 & Fijo \\
+    8 & Día Martes & -0.3055006 & 0.0023193 & < 0.001 & Fijo \\
+    9 & Día Miércoles & 0.5501174 & 0.0021720 & < 0.001 & Fijo \\
+    10 & Día Sábado & -0.3345351 & 0.0022872 & < 0.001 & Fijo \\
+    11 & Día Viernes & -0.4200540 & 0.0022094 & < 0.001 & Fijo \\
+    12 & Hora & 0.0120595 & 0.0001092 & < 0.001 & Fijo \\
+    13 & Día Jueves:Hora & 0.0034219 & 0.0001418 & < 0.001 & Fijo \\
+    14 & Día Lunes:Hora & 0.0143518 & 0.0001430 & < 0.001 & Fijo \\
+    15 & Día Martes:Hora & 0.0261333 & 0.0001442 & < 0.001 & Fijo \\
+    16 & Día Miércoles:Hora & -0.0238167 & 0.0001379 & < 0.001 & Fijo \\
+    17 & Día Sábado:Hora & 0.0188871 & 0.0001447 & < 0.001 & Fijo \\
+    18 & Día Viernes:Hora & 0.0363681 & 0.0001382 & < 0.001 & Fijo \\
+    19 & Cuenta & 0.7597790 &  &  & Aleatorio \\
+    \hline
+  \end{tabular}
+\end{center}
+
+\subsubsection{Tabla 5}
+\begin{center}
+ \captionof{table}{Resumen del modelo mixto generalizado de las reacciones totales. }\\[0.3cm]
+  \begin{tabular}{l|l|c|c|c|c}
+     \hline
+    & Factor & Estimado & Error estándar & Valor de \textit{P} & Tipo de factor\\
+    \hline
+    1 & Ordenada & 4.4013972 & 0.0892075 & < 0.001 & Fijo \\
+    2 & typelink & 2.9097964 & 0.0346406 & < 0.001 & Fijo \\
+    3 & typephoto & 3.1484458 & 0.0346363 & < 0.001 & Fijo \\
+    4 & typestatus & 0.9563817 & 0.0348913 & < 0.001 & Fijo \\
+    5 & typevideo & 2.7670169 & 0.0346380 & < 0.001 & Fijo \\
+    6 & Día Jueves & 0.0051029 & 0.0023769 & 0.0318 & Fijo \\
+    7 & Día Lunes & -0.1592056 & 0.0023730 & < 0.001 & Fijo \\
+    8 & Día Martes & -0.2847935 & 0.0024310 & < 0.001 & Fijo \\
+    9 & Día Miércoles & 0.5630974 & 0.0022792 & < 0.001 & Fijo \\
+    10 & Día Sábado & -0.3124751 & 0.0024013 & < 0.001 & Fijo \\
+    11 & Día Viernes & -0.3722196 & 0.0023278 & < 0.001 & Fijo \\
+    12 & Hora & 0.0134707 & 0.0001147 & < 0.001 & Fijo \\
+    13 & Día Jueves:Hora & 0.0005212 & 0.0001491 & < 0.001 & Fijo \\
+    14 & Día Lunes:Hora & 0.0121838 & 0.0001501 & < 0.001 & Fijo \\
+    15 & Día Martes:Hora & 0.0248435 & 0.0001512 & < 0.001 & Fijo \\
+    16 & Día Miércoles:Hora & -0.0248731 & 0.0001447 & < 0.001 & Fijo \\
+    17 & Día Sábado:Hora & 0.0176629 & 0.0001520 & < 0.001 & Fijo \\
+    18 & Día Viernes:Hora & 0.0313026 & 0.0001458 & < 0.001 & Fijo \\
+    19 & Cuenta & 0.7461024 &  &  & Aleatorio \\
+    \hline
+  \end{tabular}
+\end{center}
+
+\subsubsection{Tabla 6}
+\begin{center}
+  \captionof{table}{Resumen del modelo mixto generalizado del número de comentarios totales. }\\[0.3cm]
+  \begin{tabular}{l|l|c|c|c|c}
+     \hline	
+    & Factor & Estimado & Error estándar & Valor de \textit{P} & Tipo de factor\\
+    \hline
+    1 & Ordenada & 0.4235452 & 0.2594847 & 0.102 & Fijo \\
+    2 & typelink & 2.3448420 & 0.1452266 & < 0.001 & Fijo \\
+    3 & typephoto & 2.0705932 & 0.1451995 & < 0.001 & Fijo \\
+    4 & typestatus & 1.2516872 & 0.1462334 & < 0.001 & Fijo \\
+    5 & typevideo & 2.4870335 & 0.1452078 & < 0.001 & Fijo \\
+    6 & Día Jueves & 0.3690978 & 0.0171882 & < 0.001 & Fijo \\
+    7 & Día Lunes & 0.2292758 & 0.0170176 & < 0.001 & Fijo \\
+    8 & Día Martes & 0.8856001 & 0.0175766 & < 0.001 & Fijo \\
+    9 & Día Miércoles & 1.6931788 & 0.0164331 & < 0.001 & Fijo \\
+    10 & Día Sábado & 0.8840528 & 0.0171651 & < 0.001 & Fijo \\
+    11 & Día Viernes & 0.3630633 & 0.0169744 & < 0.001 & Fijo \\
+    12 & Hora & 0.0630851 & 0.0008208 & < 0.001 & Fijo \\
+    13 & Día Jueves:Hora & -0.0132651 & 0.0010349 & < 0.001 & Fijo \\
+    14 & Día Lunes:Hora & 0.0000359 & 0.0010310 & 0.9721 & Fijo \\
+    15 & Día Martes:Hora & -0.0538450 & 0.0010744 & < 0.001 & Fijo \\
+    16 & Día Miércoles:Hora & -0.0959447 & 0.0010173 & < 0.001 & Fijo \\
+    17 & Día Sábado:Hora & -0.0602103 & 0.0010653 & < 0.001 & Fijo \\
+    18 & Día Viernes:Hora & -0.0147150 & 0.0010285 & < 0.001 & Fijo \\
+    19 & Cuenta & 0.8725728 &  &  & Aleatorio \\
+    \hline
+  \end{tabular}
+\end{center}
+
+
+\subsubsection{Tabla 7}
+\begin{center}
+  \captionof{table}{Resumen del modelo mixto generalizado del número de ``Shares'' totales. }\\[0.3cm]
+  \begin{tabular}{l|l|c|c|c|c}
+    \hline
+    & Factor & Estimado & Error estándar & Valor de \textit{P} & Tipo de factor\\
+    \hline
+    1 & Ordenada & -10.2355094 & 0.2094106 & < 0.001 & Fijo \\
+    2 & typelink & 15.3472588 & 0.1418068 & < 0.001 & Fijo \\
+    3 & typephoto & 14.9126134 & 0.1418025 & < 0.001 & Fijo \\
+    4 & typestatus & 12.4376677 & 0.1430408 & < 0.001 & Fijo \\
+    5 & typevideo & 15.9726640 & 0.1418029 & < 0.001 & Fijo \\
+    6 & Día Jueves & -0.4456281 & 0.0081965 & < 0.001 & Fijo \\
+    7 & Día Lunes & -0.4913703 & 0.0083773 & < 0.001 & Fijo \\
+    8 & Día Martes & -0.8173742 & 0.0086477 & < 0.001 & Fijo \\
+    9 & Día Miércoles & 0.1367379 & 0.0080057 & < 0.001 & Fijo \\
+    10 & Día Sábado & -0.8598023 & 0.0084114 & < 0.001 & Fijo \\
+    11 & Día Viernes & -0.9668135 & 0.0077747 & < 0.001 & Fijo \\
+    12 & Hora & -0.0117634 & 0.0004007 & < 0.001 & Fijo \\
+    13 & Día Jueves:Hora & 0.0382899 & 0.0005137 & < 0.001 & Fijo \\
+    14 & Día Lunes:Hora & 0.0369934 & 0.0005316 & < 0.001 & Fijo \\
+    15 & Día Martes:Hora & 0.0582518 & 0.0005361 & < 0.001 & Fijo \\
+    16 & Día Miércoles:Hora & 0.0057486 & 0.0005086 & < 0.001 & Fijo \\
+    17 & Día Sábado:Hora & 0.0503054 & 0.0005323 & < 0.001 & Fijo \\
+    18 & Día Viernes:Hora & 0.0923213 & 0.0004851 & < 0.001 & Fijo \\
+    19 & Cuenta & 0.9266213 &  &  & Aleatorio \\
+    \hline
+  \end{tabular}
+\end{center}
+
+\subsubsection{Tabla 8}
+
+\begin{center}
+  \captionof{table}{Tabla de devianza con los porcentajes de variación de los factores analizados para 
+  el enganche de SEAT.}\\[0.3cm]
+  \begin{tabular}{l|l|c|c|c}
+    & Nombre & Devianza & Porcentaje de influencia & Gl \\
+    \hline
+    1 & Número Posteos & 0.645 & 71.501\% & 1 \\
+    2 & Hora & 0.055 & 6.197\% & 17 \\
+    3 & DiaSemana & 0.015 & 1.678\% & 6 \\
+    4 & Error &  & 20.622\% &  \\
+    \hline
+  \end{tabular}
+\end{center}
+
+\subsubsection{Tabla 9}
+
+\begin{center}
+ \captionof{table}{Tabla de devianza con los porcentajes de variación de los factores analizados para 
+  el enganche de VWFS.}\\[0.3cm]
+  \begin{tabular}{l|l|c|c|c}
+    & Nombre & Devianza & Porcentaje de influencia & Gl \\
+    \hline
+    2 & Número Posteos & 0.158 & 10.291\% & 1 \\
+    3 & Hora & 0.324 & 21.006\% & 14 \\
+    4 & DiaSemana & 0.385 & 24.997\% & 6 \\
+    5 & Error &  & 43.704\% &  \\
+    \hline
+  \end{tabular} 
+\end{center}
+
+ 
 
 
 \begin{thebibliography}{20}
