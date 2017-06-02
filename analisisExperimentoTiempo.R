@@ -542,6 +542,16 @@ mixto3 <- glmer(comments_count~type+Dia*Hora+(1|from_name),
 mixto4 <- glmer(shares_count~type+Dia*Hora+(1|from_name),
       data= Posteos, family = "poisson") 
 
+mixto1 %>% summary %>%  .[8]
+tidy(augment(mixto1))
+
+tidy(mixto4) %>% 
+  mutate(group = ifelse(group=="fixed", "Fijo", "Aleatorio")) %>% 
+  select(-statistic) %>% 
+  mutate(p.value = ifelse(p.value<0.01, "< 0.001", p.value)) %>% 
+  mutate(term = gsub("Dia", "Día ", term)) %>% 
+  toLatex()
+  
 
 
 Posteos %>%  
