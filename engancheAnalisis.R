@@ -141,9 +141,25 @@ modelos2 <- SumaPosteos %>%
 
 
 modelos2 %>% 
-  lapply(function(x){anova(x, test="Chisq")})
+  lapply(function(x){
+    X = anova(x, test="Chisq")
+    X  = X %>% 
+      mutate(Porcentaje  = Deviance/head(`Resid. Dev`,1)*100) %>% 
+      mutate(Nombre = c("Nulo", "Número Posteos",
+                        "Hora", "DiaSemana"))
+    Z = tail(X$`Resid. Dev`,1)/head(X$`Resid. Dev`,1)*100
+    DF1 <- data.frame(X1 = "", X2= "", X3 = "", X4 = "", X5 = "", X6 = Z,
+                      x7 = "Error")
+    names(DF1)<- names(X)
+    X <- rbind(X, DF1) %>% 
+      select(Nombre, Deviance, Porcentaje, Df)
+    
+    return(X %>%  toLatex())
+    
 
+    })
 
+modelos2$SEAT %>%  anova(test="Chisq")
 # Gráficos ----------------------------------------------------------------
 dias <- c("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", 
           "Sábado")
