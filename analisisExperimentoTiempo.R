@@ -231,7 +231,7 @@ coloresBrew = c('#ef8a62','#f7f7f7','#67a9cf')
 coloresBrew = c('gray50','#a6cee3','#1f78b4','#b2df8a', "darkgreen")
 setwd("~/local/Sonia/HoraPosteoFinanciera/imagenes/")
 png("figura5.png",height = 800, width = 1000, res = 120)
-post2 %>% 
+post2 %>%
   select(-type) %>%
   group_by(Dia, Hora) %>%
   summarise_each(funs(sum(.,na.rm=T))) %>%
@@ -241,7 +241,8 @@ post2 %>%
   geom_tile(aes(fill = Reacciones), colour = "black") + 
   scale_fill_gradientn(colours = coloresBrew,
                        labels =scales::comma,
-                       breaks = seq(0, 1.5e6, by=2e5))+
+                       breaks = seq(0, 1.5e6, by=2e5),
+                       name="Interacciones \n Totales")+
   # scale_fill_gradient2(name = "Interacciones \n Totales",
   #                      low =  "white",
   #                      high = "steelblue",

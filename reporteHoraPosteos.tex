@@ -64,12 +64,7 @@ sin embargo las horas y días en las que una persona pasa en esta red social es 
 con respecto a la zona geográfica y la ocupación de las personas, por lo que crear estrategias 
 para postear (crear contenido en Facebook) también dependerá de estas variables.
 
-En estudios anteriores hechos para el público estadounidense se concluye que el mejor
-horario para postear y obtener interacciones es  de 1 a 4 de la tarde en fines de semana, sin embargo, 
-si se desea aumentar el número de veces compartido (``shares'') y clicks a las publicaciones de determinada cuenta,
-las mejores horas para postear son las 13, 15 y 21 horas (Ellering, 2016), no obstante estos estudios
-toman en cuenta solo Estados Unidos por lo que no podrían aplicarse correctamente dichos estudios
-al comportamiento de las personas que habitan otros paises.\\
+
 
 Para el caso concreto de las redes sociales de SEAT y Volkswagen Financial Services
 los ``Community managers'' de estas cuentas se esfuerzan en crear estrategias para postear y dar seguimiento a sus clientes,
@@ -143,7 +138,7 @@ y la cuenta de SEAT, puesto que son las cuentas administradas por Base10 .
   \end{center} 
 \end{figure}
 
-\subsection{Recolección de datos}
+\subsection{Colecta de datos}
 Los datos de los perfiles de redes sociales se tomarán diréctamente de la API Graph de Facebook 
 versión 2.9 (Facebook for developers, 2017), las llamadas a la API se realizaron con el lenguaje de programación Python
 versión 2.7, y el paquete Rfacebook (Barbera et al, 2017) del lenguaje de programación R (R Core Team, 2017).
@@ -159,6 +154,10 @@ explicativas el número de posteos, el tipo de publicación, el día y hora de
 la publicación. Para hacer esta comparación, se realizaron modelos lineales generalizados (GLM)
 con distribución quasibinomial con liga ``logit'', esto debido a que los residuales 
 presentaron sobredispersión.
+Cabe señalar que para  estos análisis no se tomaron en cuenta
+los diferentes husos horarios presentes en México,
+por lo que la hora estándar utilizada como hora de interacción 
+fue la de la zona del centro de México (CENAM, 2017).
 Todos los análisis estadísticos se realizaron con el lenguaje de programación
 R (R Core Team 2017) en conjunto con los paquetes ``lme4'' (Bates et al 2015), 
 ggplot2 (Wickham 2009), ``data.table'' (Dowle y Srinivasan 2017) y 
@@ -201,20 +200,39 @@ semana fue el que explica la mayor variación (25\%) seguido
 de la hora (21\%) (Tabla 9).
 
 
-
-
-
-
-
 \section{Discusión}
+Puesto que facebook es una red social muy popular y su presencia es a nivel mundial, 
+detectar una hora ideal para postear se ve sesgada a una región en particular, esto
+debido a los diferentes husos horarios presentes en cada país.\\
+Estos husos horarios pueden ser tomados en cuenta, como en el caso de Ellering (2016)
+el cuál muestra un estudio donde se tomaron en cuenta los husos horarios
+de Estados Unidos y para este país n concluye que el mejor horario para postear 
+es de jueves a domingo si lo que  se desea es obtener un buen porcentaje de enganche, 
+por otro lado si se desea obtener clicks, las 15 horas parecen ser la hora ideal.
+Esto va de la mano con la cantidad de usuarios activos en la red social, 
+que generalmente es de 12 a 22 horas. 
+Fontein (2016) muestra que los mejores días para postear son los jueves y viernes
+de 13 a 15 horas.\\
+Estos resultados son parecidos a los nuestros para los fans de las cuentas
+automotrices, puesto que se encontró que un buen horario para postear 
+es en el intervalo de las 19 a 21 horas y de las 12 a las 15 horas. 
+Los mejores días fueron los días lunes, martes, jueves y viernes,
+esto para el caso de todas las automotrices. No obstante para realizar 
+un mejor análisis sería conveniente tomar en cuenta el horario de actividad
+de los fans de las cuentas, los husos horarios de los fans de las cuentas y
+los sitios de origen de los fans, lo cual nos dará una mejor comprensión 
+de la mejor opción de postear en Facebook.
+
+
+
 
 \section{Conclusiones}
 De manera general, las interacciones se ven afectadas por una gran 
 cantidad de factores, tal es el caso de la hora y el día, 
 las mayores interacciones se obtienen 
-al postear entre las 18 y 21 horas tomando en cuenta el
-posteo entre los días Martes a Viernes, puesto que el fin de 
-semana la interacción es mucho menor.\\
+al postear entre las 18 a  21 horas y de las 12 a 15 horas, 
+tomando en cuenta el posteo entre los días Lunes, Martes, Jueves y Viernes,
+puesto que el fin de semana la interacción es mucho menor.\\
 Para el caso del enganche, para VWFS la hora y el día
 del posteo si tuvieron un efecto en el porcentaje de personas  enganchadas,
 lo cual para el caso de SEAT cambia completamente
@@ -258,7 +276,8 @@ es mucho más influyente en el enganche.
   \begin{center}
    \includegraphics[width=.85\textwidth]{imagenes/figura5.png}
    \captionsetup{width=.80\textwidth}
-   \caption{\centering Concentración de interacciones totales durante el día y a 
+   \caption{\centering Concentración de interacciones totales 
+   (Suma de reacciones, comentarios y número de veces compartido) durante el día y a 
    lo largo de la semana.} 
   \end{center} 
 \end{figure}
@@ -538,18 +557,25 @@ es mucho más influyente en el enganche.
 \end{center}
 
  
-
+\\[2cm]
 
 \begin{thebibliography}{20}
-  \bibitem{1} Casteleyn J; Mottart A; Rutten K. (2009). How to use Facebook in you market research. International Journal of Market Research. 51(4) 439-447.
-  \bibitem{2} Facebook. (2017). \textit{ Statistics of  Facebook}, Palo  Alto,  CA:  Facebook. Tomado de: http://ltam.newsroom.fb.com/company-info/
-  \bibitem{5} Facebook for developers (2017). Tomado de: https://developers.facebook.com/docs/graph-api
-  \bibitem{3} Internet World Stats. (2017). Tomado de: http://www.internetworldstats.com/stats.htm
-  \bibitem{10} R Core Team (2017). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/
-  \bibitem{4} Roshnee R; Fowdar S. (2013). The implications of Facebook Marketing for Organizations. Contemporay Management Research. 9 (1) 73-84. doi:10.7903/cmr.9710 
-  \bibitem{5} Smarth Insights. (2016). Global social media research summary 2016. Tomado de: http://www.smartinsights.com/social-media-marketing/social-media-strategy/new-global-social-media-research/
-  \bibitem{6} Stewart J. (2017). Facebook Has 50 Minutes of Your Time Each Day. It Wants More. Tomado de : https://www.nytimes.com/2016/05/06/business/facebook-bends-the-rules-of-audience-engagement-to-its-advantage.html
- \bibitem{7} Wilson R; Gosling S; Graham L. (2012). A review of Facebook research in the social sciences. Perspectives on Psychological Science 7 (3) 203-220
+  \bibitem{1}  Bates D; Maechler M; Bolker B; Walker S. (2015). Fitting Linear Mixed-Effects Models Using lme4. Journal of Statistical Software,67(1), 1-48. doi:10.18637/jss.v067.i01.
+  \bibitem{2} Casteleyn J; Mottart A; Rutten K. (2009). How to use Facebook in you market research. International Journal of Market Research. 51(4) 439-447.
+  \bibitem{3} Centro Nacional de Metrología (CENAM) (2017). Tomado de: http://www.cenam.mx/
+  \bibitem{4}  Dowle M; Srinivasan A. (2017). data.table: Extension of  data.frame. R package version 1.10.4. https://CRAN.R-project.org/package=data.table
+  \bibitem{5}  Ellering N. (2016). What 16 Studies Say About The Best Times To Post On Social Media. Tomado de: https://coschedule.com/blog/best-times-to-post-on-social-media/.
+  \bibitem{6} Facebook. (2017). \textit{ Statistics of  Facebook}, Palo  Alto,  CA:  Facebook. Tomado de: http://ltam.newsroom.fb.com/company-info/
+  \bibitem{7} Facebook for developers (2017). Tomado de: https://developers.facebook.com/docs/graph-api
+  \bibitem{8}  Fontein D (2016). El mejor momento para postear en redes sociales. Tomado de: https://blog.hootsuite.com/es/mejor-momento-publicar-redes-sociales/
+  \bibitem{9}  Wickham H; Francois R. (2016). dplyr: A Grammar of Data Manipulation. R package version 0.5.0. https://CRAN.R-project.org/package=dplyr
+  \bibitem{10}  Wickham H. (2009). ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag Nueva York
+  \bibitem{11} Internet World Stats. (2017). Tomado de: http://www.internetworldstats.com/stats.htm
+  \bibitem{12} R Core Team (2017). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/
+  \bibitem{13} Roshnee R; Fowdar S. (2013). The implications of Facebook Marketing for Organizations. Contemporay Management Research. 9 (1) 73-84. doi:10.7903/cmr.9710 
+  \bibitem{14} Smarth Insights. (2016). Global social media research summary 2016. Tomado de: http://www.smartinsights.com/social-media-marketing/social-media-strategy/new-global-social-media-research/
+  \bibitem{15} Stewart J. (2017). Facebook Has 50 Minutes of Your Time Each Day. It Wants More. Tomado de : https://www.nytimes.com/2016/05/06/business/facebook-bends-the-rules-of-audience-engagement-to-its-advantage.html
+  \bibitem{16}  Wilson R; Gosling S; Graham L. (2012). A review of Facebook research in the social sciences. Perspectives on Psychological Science 7 (3) 203-220
 \end{thebibliography}
 
 
